@@ -1,0 +1,155 @@
+/* 初始化 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #fff;
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+li {
+    list-style: none;
+}
+
+textarea {
+    resize: none;
+    outline: none;
+}
+
+.box {
+    width: 800px;
+    height: 650px;
+    margin: 100px auto 50px;
+    background-color: #f3f3f3;
+    box-shadow: 0px 0px 3px 1px #ccc;
+    border-radius: 3px;
+}
+
+/* 头部区域 */
+.header {
+    height: 7%;
+    /* background-color: #285185; */
+    text-align: center;
+    line-height: 45.5px;
+    background-image: linear-gradient(#285185, #3c669e);
+    border-radius: 3px 3px 0 0;
+}
+
+.name {
+    color: #fff;
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+}
+
+/* 聊天内容区域 */
+.chat-content {
+    overflow: auto;
+    height: 65%;
+    padding: 0px 10px;
+}
+
+.chat-list li {
+    margin: 10px 0;
+    /* background-color: pink; */
+}
+
+.chat-list li .headshot {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.chat-list li .msg img {
+    width: 250px;
+}
+
+.chat-list li .msg {
+    max-width: 520px;
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.chat-list .left-li div {
+    float: left;
+}
+
+.chat-list .left-li .msg {
+    margin-left: 10px;
+}
+
+.chat-list .right-li div {
+    float: right;
+}
+
+.chat-list .right-li .msg {
+    margin-right: 10px;
+    background-color: #285185;
+    color: #fff;
+}
+
+
+/* 输入框区域 */
+.footer {
+    height: 28%;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+}
+
+textarea {
+    width: 100%;
+    height: 75%;
+    background-color: #f3f3f3;
+    border: 0;
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+.btn {
+    float: right;
+    width: 75px;
+    height: 30px;
+    margin-left: 15px;
+    background-color: #285185;
+    border: 0;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #3c669e;
+}
+
+/* 清除浮动 */
+.clearfix::before,
+.clearfix::after {
+    content: "";
+    display: table;
+}
+
+.clearfix::after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+/* audio */
+.audio-area {
+    text-align: center;
+}
+
+.audio-area .tip {
+    margin-top: 20px;
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+    color: gray;
+    line-height: 2.0;
+}

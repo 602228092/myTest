@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理</title>
+    <link rel="stylesheet" href="./dist/css/bootstrap.min.css">
+    <script src="./js/jquery.min.js"></script>
+    <style>
+        body {
+            padding: 15px;
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+    </style>
+    <script>
+        $(function () {
+            // 获取图书列表
+            function getBookList() {
+                $.get("http://www.liulongbin.top:3006/api/getbooks", function (res) {
+                    if (res.status !== 200) {
+                        return alert("获取图书列表失败！")
+                    }
+                    var rows = [];
+                    $.each(res.data, function (i, item) {
+                        rows.push("<tr><td>" + item.id + "</td><td>" + item.bookname + "</td><td>" + item.author + "</td><td>" + item.publisher + "</td><td><a href='javascript:;' class='del' data-id='" + item.id + "'>删除</a></td></tr>");
+                    });
+                    $("#book-body").empty().append(rows.join(""));
+                })
+            };
+
+            // 通过事件委托的方式为动态添加的元素绑定事件
+            $("#book-body").on("click", ".del", function () {
+                var id = $(this).attr("data-id");
+                console.log(id);
+                // 删除图书
+                $.get("http://www.liulongbin.top:3006/api/delbook", {
+                    id: id
+                }, function (res) {
+                    console.log(res.status);
+                    if (res.status !== 200) {
+                        return console.log("删除图书失败！")
+                    }
+                    getBookList();
+                })
+            });
+
+
+            $(".btn").on("click", function () {
+                var bookName = $("#book-name").val().trim();
+                var bookAuthor = $("#book-author").val().trim();
+                var bookPublisher = $("#book-publisher").val().trim();
+
+                if (bookName && bookAuthor && bookPublisher) {
+                    // 添加图书
+                    $.post("http://www.liulongbin.top:3006/api/addbook", {
+                        bookname: bookName,
+                        author: bookAuthor,
+                        publisher: bookPublisher
+                    }, function (res) {
+                        console.log(res.status);
+                        if (res.status !== 201) {
+                            return console.log("添加图书失败！")
+                        }
+                        getBookList();
+                        // 清空输入框
+                        $("#book-name").val("");
+                        $("#book-author").val("");
+                        $("#book-publisher").val("");
+                    })
+                } else {
+                    return console.log("请填写完整的图书信息！");
+                }
+            })
+
+            getBookList();
+        })
+    </script>
+</head>
+
+<body>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">添加新图书</h3>
+        </div>
+        <div class="panel-body form-inline">
+
+            <div class="input-group">
+                <div class="input-group-addon">书名</div>
+                <input type="text" class="form-control" id="book-name" placeholder="请输入书名">
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">作者</div>
+                <input type="text" class="form-control" id="book-author" placeholder="请输入作者">
+            </div>
+            <div class="input-group">
+                <div class="input-group-addon">出版社</div>
+                <input type="text" class="form-control" id="book-publisher" placeholder="请输入出版社">
+            </div>
+
+            <button id="btn" class="btn btn-primary">添加</button>
+
+        </div>
+    </div>
+
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>书名</th>
+                <th>作者</th>
+                <th>出版社</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="book-body">
+            <tr>
+                <td>00</td>
+                <td>布吉岛</td>
+                <td>徐康华</td>
+                <td>清华大学出版社</td>
+                <td><a href="javascript:;">删除</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+</body>
+
+</html>

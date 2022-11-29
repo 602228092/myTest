@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论列表</title>
+    <link rel="stylesheet" href="./dist/css/bootstrap.min.css" />
+    <script src="./js/jquery.min.js"></script>
+    <style>
+        body {
+            padding: 10px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        .list-group-item .badge:first-child {
+            background-color: pink;
+        }
+
+        .list-group-item .badge:last-child {
+            background-color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">发表评论</h3>
+        </div>
+        <div class="panel-body">
+            <form action="" class="f1" method="">
+                <div>评论人：</div>
+                <input type="text" class="form-control" required="required" name="username">
+                <div>评论内容：</div>
+                <textarea class="form-control" required="required" name="content"></textarea>
+                <button type="submit" class="btn btn-primary">发表评论</button>
+            </form>
+        </div>
+    </div>
+
+
+    <ul class="list-group">
+        <!-- <li class="list-group-item">
+            <span class="badge">评论时间：</span>
+            <span class="badge">评论人：</span>
+            Item 1
+        </li> -->
+
+        <!-- <li class='list-group-item'><span class='badge'>评论时间：</span><span class='badge'>评论人：</span>Item 1</li> -->
+
+    </ul>
+
+    <script>
+        $(function () {
+            // 获取评论列表
+            function getCommentList() {
+                $.ajax({
+                    type: "GET",
+                    url: "http://www.liulongbin.top:3006/api/cmtlist",
+                    success: function (res) {
+                        // console.log(res);
+                        if (res.status !== 200) {
+                            return console.log("获取评论接口失效");
+                        }
+                        var arr = [];
+                        $.each(res.data, function (i, item) {
+                            arr.push("<li class='list-group-item'><span class='badge'>评论时间：" + item.time + "</span><span class='badge'>评论人：" + item.username + "</span>" + item.content + "</li>");
+                        });
+
+                        $(".list-group").empty().append(arr.join(""));
+                    }
+                });
+            }
+
+            // 发表评论
+            function addComment(data) {
+                $.ajax({
+                    type: "POST",
+                    url: "http://www.liulongbin.top:3006/api/addcmt",
+                    data: data,
+                    // data: {
+                    //     username: username,
+                    //     content: content
+                    // },
+                    success: function (res) {
+                        console.log(res);
+                        if (res.status !== 201) {
+                            return console.log("发表评论接口失效");
+                        }
+                        getCommentList();
+                    }
+                });
+            }
+
+            // addComment("username", "content");
+
+            $(".f1").on("submit", function (e) {
+                e.preventDefault();
+                // 阻止表单提交的默认行为
+                // 我的理解：
+                // 1. 阻止页面跳转
+                // 2. GET POST 提交方法将无法获取数据 ( 因为我在Network中找不到数据 )
+                // 3. 此时的表单失去了提交功能，成为了一个采集数据的容器，
+                //    然后数据将被表单的serialize()方法获取，然后用于发送ajax请求
+                console.log("我进来了");
+                var data = $(this).serialize();
+                console.log(data);
+                addComment(data);
+            })
+
+
+
+            getCommentList();
+        })
+    </script>
+
+
+</body>
+
+</html>

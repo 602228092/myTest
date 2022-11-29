@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>淘宝搜索</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: gray;
+        }
+
+        .search {
+            display: flex;
+            position: relative;
+            width: 591px;
+            height: 37px;
+            margin: 250px auto;
+            border: 2px solid #ff5500;
+        }
+
+        .ipt {
+            float: left;
+            width: 500px;
+            height: 100%;
+            padding: 5px;
+            border: 0;
+            outline: none;
+            /* background-color: pink; */
+        }
+
+        .ipt:focus::placeholder {
+            color: #ccc;
+        }
+
+        .btn {
+            /* float: left; */
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            background-color: #ff5500;
+            border: 0;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .sug-list {
+            display: none;
+            position: absolute;
+            top: 30px;
+            width: 500px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .sug-list li {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .sug-list li a {
+            display: block;
+            padding-left: 5px;
+        }
+
+        .sug-list li a:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="search">
+        <input type="text" placeholder="请输入要搜索的内容" class="ipt">
+        <button class="btn">搜 索</button>
+        <ul class="sug-list">
+
+            <!-- <li><a href='javascript:;'>" + item[0] + "</a></li> -->
+        </ul>
+    </div>
+
+    <!-- 模板引擎 -->
+    <script type="text/html" id="list">
+            {{each result}}
+                <li><a href="javascript:;">{{$value[0]}}</a></li>
+            {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            // 输入框防抖 123
+            var timer = null;   // 1.定义延时器id
+            var cacheObj = {};  // 定义全局缓存对象
+
+            // 2.定义防抖函数
+            function debounceSearch(keywords) {
+                timer = setTimeout(function () {
+                    getSuggestList(keywords);
+                }, 500)
+            };
+
+
+            $(".ipt").on("keyup", function () {
+                // 清空 timer
+                clearInterval(timer);
+
+                var keywords = $(this).val().trim();
+                if (keywords.length <= 0) {
+                    $(".sug-list").empty().hide();
+                    return console.log("用户未输入内容");
+                }
+
+                // 优先从缓存中获取搜索建议
+                if (cacheObj[keywords]) {
+                    var htmlStr = template("list", cacheObj[keywords]);
+                    $(".sug-list").html(htmlStr);
+                    $(".sug-list").show();
+
+                    return console.log("优先从缓存中获取搜索建议");
+                }
+
+                // getSuggestList(keywords);
+                debounceSearch(keywords);   // 防抖优化后
+            });
+
+            function getSuggestList(keywords) {
+                $.ajax({
+                    url: "https://suggest.taobao.com/sug?q=" + keywords,
+                    dataType: "jsonp",
+                    success: function (res) {
+                        console.log(res.result);
+
+                        if (res.result.length <= 0) {
+                            $(".sug-list").empty().hide();
+                            return console.log("暂无数据");
+                        }
+
+                        // 传统方法渲染
+                        // var arr = [];
+                        // $.each(res.result, function (i, item) {
+                        //     arr.push("<li><a href='javascript:;'>" + item[0] + "</a></li>");
+                        // });
+                        // $(".sug-list").html(arr.join(""));
+
+
+                        // 模板引擎渲染
+                        var htmlStr = template("list", res);
+                        $(".sug-list").html(htmlStr);
+
+                        $(".sug-list").show();
+
+                        // 1.获取到用户输入的内容，作为“键”
+                        var k = $(".ipt").val().trim();
+                        // 2.将服务器返回的数据作为“值”，进行缓存
+                        cacheObj[k] = res;
+                    }
+                })
+            }
+
+        })
+    </script>
+
+</body>
+
+</html>
